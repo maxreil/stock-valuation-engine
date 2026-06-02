@@ -1,4 +1,6 @@
 from data.fetch_data import get_stock_data
+from models.dcf import dcf_valuation
+from config import GROWTH_RATE, DISCOUNT_RATE, FORECAST_YEARS
 # connect main.py to data_layer
 
 def main():
@@ -7,21 +9,25 @@ def main():
 
     print(f"\nFetching data for {ticker}...\n")
 
-    # Step 2: Fetch stock data
-    data = get_stock_data(ticker) # Calling the data pipeline
+    # Step 2: Get free cash flow
+    fcf = get_free_cash_flow(ticker) # Calling the data pipeline
 
-    # Step 3: Basic check
-    if data:
-        print("Data fetched successfully.\n")
+    if fcf is None:
+        print("Could not retrieve Free Cash Flow.")
+        return
 
-        # Print what we received (for debugging/understanding)
-        print("Available data:")
-        print("Cashflow:", data["cashflow"] is not None)
-        print("Financials:", data["financials"] is not None)
-        print("Balance Sheet:", data["balance_sheet"] is not None)
-        # This is verifiying the output
-    else:
-        print("Failed to fetch data.")
+    print(f"Free Cash Flow: {fcf}\n")
+
+    # Step 3: Run DCF valuation
+    intrinsic_value = dcf_valuation(
+        fcf,
+        GROWTH_RATE,
+        DISCOUNT_RATE,
+        FORECAST_YEARS
+    )
+
+    # Step 4: Output result
+    print(f"Estimated Intrinsic Value: {intrinsic_value}")
 
 
 if __name__ == "__main__":
