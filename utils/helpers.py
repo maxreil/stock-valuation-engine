@@ -1,5 +1,10 @@
-def safe_get(series, key):
+def safe_get(dataframe, key):
+    """
+    Safely retrieve a row from a pandas DataFrame.
+
+    Returns None if the key does not exist.
+    """
     try:
-        return series.loc[key]
+        return dataframe.loc[key]
     except Exception:
         return None
