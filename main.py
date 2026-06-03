@@ -1,6 +1,11 @@
-from data.fetch_data import get_stock_data
+from data.fetch_data import get_free_cash_flow, get_market_price
 from models.dcf import dcf_valuation
-from config import GROWTH_RATE, DISCOUNT_RATE, FORECAST_YEARS
+from config import (
+    GROWTH_RATE, 
+    DISCOUNT_RATE,
+    TERMINAL_GROWTH_RATE,
+    FORECAST_YEARS
+)
 # connect main.py to data_layer
 
 def main():
@@ -9,25 +14,36 @@ def main():
 
     print(f"\nFetching data for {ticker}...\n")
 
-    # Step 2: Get free cash flow
+    # FREE CASH FLOW
     fcf = get_free_cash_flow(ticker) # Calling the data pipeline
-
     if fcf is None:
         print("Could not retrieve Free Cash Flow.")
         return
 
-    print(f"Free Cash Flow: {fcf}\n")
+    # GET MARKET PRICE
+    market_price = get_market_price(ticker)
+    if market_price is None:
+        print("Failed to retrieve market price.")
+        return
 
-    # Step 3: Run DCF valuation
+    # DCF VALUATION
     intrinsic_value = dcf_valuation(
         fcf,
         GROWTH_RATE,
         DISCOUNT_RATE,
+        TERMINAL_GROWTH_RATE,
         FORECAST_YEARS
     )
 
-    # Step 4: Output result
-    print(f"Estimated Intrinsic Value: {intrinsic_value}")
+    # COMPARING VALUE
+    print(f"Free Cash Flow: {fcf}")
+    print(f"Intrinsic Value: {intrinsic_value}")
+    print(f"Market Price: {market_price}")
+
+    if intrinsic_value > market_price:
+        print("Verdict: Undervalued")
+    else:
+        print("Verdict: Overvalued")
 
 
 if __name__ == "__main__":
