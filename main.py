@@ -35,13 +35,24 @@ def main():
         FORECAST_YEARS
     )
 
+    # UPSIDE/DOWNSIDE CALCULATION
+    upside = (intrinsic_value - market_price) / market_price
+
     # COMPARING VALUE
+    print("\n--- VALUATION RESULTS ---\N")
+    
     print(f"Free Cash Flow: {fcf}")
     print(f"Intrinsic Value: {intrinsic_value}")
     print(f"Market Price: {market_price}")
+    print(f"Upside/Downside: {upside:.2%}\n")
 
-    if intrinsic_value > market_price:
-        print("Verdict: Undervalued")
+    # INTERPRETATION
+    if upside > 0.2:
+        print("Verdict: Significantly Undervalued")
+    elif upside > 0.05:
+        print("Verdict: Slightly Undervalued")
+    elif upside > -0.05:
+        print("Verdict: Fairly Valued")
     else:
         print("Verdict: Overvalued")
 
